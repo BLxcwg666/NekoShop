@@ -205,6 +205,19 @@ export const adminApi = {
     })
   },
 
+  async manualConfirmOrder(orderId: string, reason: string, token: string): Promise<ApiResponse<any>> {
+    console.log('发送手动确认订单请求，订单ID:', orderId, '原因:', reason)
+    
+    return apiRequest<ApiResponse<any>>(`/admin/orders/${orderId}/manual-confirm`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ reason })
+    })
+  },
+
   async deleteOrder(orderId: string, token: string): Promise<ApiResponse<void>> {
     return apiRequest<ApiResponse<void>>(`/admin/orders/${orderId}`, {
       method: 'DELETE',

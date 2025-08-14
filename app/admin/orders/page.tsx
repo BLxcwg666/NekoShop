@@ -20,7 +20,8 @@ import {
   Edit,
   Key,
   Eye,
-  X
+  X,
+  CheckSquare
 } from 'lucide-react'
 
 interface OrderStatusUpdateProps {
@@ -86,6 +87,9 @@ export default function AdminOrdersPage() {
   const [orderCardKeys, setOrderCardKeys] = useState<CardKey[]>([])
   const [isCardKeysModalOpen, setIsCardKeysModalOpen] = useState(false)
   const [isLoadingCardKeys, setIsLoadingCardKeys] = useState(false)
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
+  const [confirmReason, setConfirmReason] = useState('')
+  const [isConfirming, setIsConfirming] = useState(false)
   const { user } = useAdminAuth()
 
   const loadOrders = async (status?: string) => {
@@ -183,6 +187,54 @@ export default function AdminOrdersPage() {
       console.error('删除订单错误:', err)
       const errorMessage = isApiError(err) ? err.error.message : '删除失败'
       alert(errorMessage)
+    }
+  }
+
+  const handleManualConfirm = async (orderId: string) => {
+    setSelectedOrderId(orderId)
+    setIsConfirmModalOpen(true)
+    setConfirmReason('')
+  }
+
+  const handleConfirmSubmit = async () => {
+    if (!user?.token || !selectedOrderId || !confirmReason.trim()) return
+
+    setIsConfirming(true)
+    try {
+      const response = await adminApi.manualConfirmOrder(selectedOrderId, confirmReason.trim(), user.token)
+      if (response.success) {
+        const updatedOrders = orders.map(order =>
+          order.id === selectedOrderId 
+            ? { 
+                ...order, 
+                status: response.data.status as Order['status'],
+                paymentStatus: response.data.paymentStatus as Order['paymentStatus'],
+                paidAt: response.data.paidAt,
+                updatedAt: response.data.updatedAt
+              } 
+            : order
+        )
+        setOrders(updatedOrders)
+        
+        const filtered = updatedOrders.filter(order =>
+          order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          order.customerContact.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        setFilteredOrders(filtered)
+        
+        setIsConfirmModalOpen(false)
+        setConfirmReason('')
+        setSelectedOrderId(null)
+        alert('订单确认成功')
+      } else {
+        alert('确认失败')
+      }
+    } catch (err) {
+      console.error('手动确认订单错误:', err)
+      const errorMessage = isApiError(err) ? err.error.message : '确认失败'
+      alert(errorMessage)
+    } finally {
+      setIsConfirming(false)
     }
   }
 
@@ -391,6 +443,15 @@ export default function AdminOrdersPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-2">
+                        {order.paymentStatus === 'pending' && (
+                          <button
+                            onClick={() => handleManualConfirm(order.id)}
+                            className="text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300"
+                            title="手动确认订单"
+                          >
+                            <CheckSquare className="w-4 h-4" />
+                          </button>
+                        )}
                         <button
                           onClick={() => handleViewCardKeys(order.id)}
                           className="text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300"
@@ -510,6 +571,74 @@ export default function AdminOrdersPage() {
                   className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md"
                 >
                   关闭
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 手动确认订单模态框 */}
+      {isConfirmModalOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex min-h-screen items-center justify-center p-4">
+            <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setIsConfirmModalOpen(false)} />
+            <div className="relative bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  手动确认订单
+                </h2>
+                <button
+                  onClick={() => setIsConfirmModalOpen(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    订单ID: #{selectedOrderId}
+                  </p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    请输入确认原因，此操作将立即确认订单支付状态并分配相应商品。
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    确认原因 *
+                  </label>
+                  <textarea
+                    value={confirmReason}
+                    onChange={(e) => setConfirmReason(e.target.value)}
+                    placeholder="请说明手动确认的原因，如：客户线下支付、银行转账确认等"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                    rows={3}
+                    maxLength={200}
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    {confirmReason.length}/200
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-3 mt-6">
+                <button
+                  onClick={() => setIsConfirmModalOpen(false)}
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
+                  disabled={isConfirming}
+                >
+                  取消
+                </button>
+                <button
+                  onClick={handleConfirmSubmit}
+                  disabled={isConfirming || !confirmReason.trim()}
+                  className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-md flex items-center space-x-2"
+                >
+                  {isConfirming && <RefreshCw className="w-4 h-4 animate-spin" />}
+                  <span>{isConfirming ? '确认中...' : '确认订单'}</span>
                 </button>
               </div>
             </div>
