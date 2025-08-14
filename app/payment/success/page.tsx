@@ -1,12 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { CheckCircle, ArrowRight, Package, Clock } from 'lucide-react'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { orderApi } from '@/lib/api'
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session_id')
@@ -235,5 +235,20 @@ export default function PaymentSuccessPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <LoadingSpinner />
+          <p className="mt-4 text-gray-600 dark:text-gray-400">正在加载支付结果...</p>
+        </div>
+      </div>
+    }>
+      <PaymentSuccessPageContent />
+    </Suspense>
   )
 }

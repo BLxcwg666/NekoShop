@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Search, Package, Calendar, CreditCard, Phone, Mail, Key, Eye, EyeOff, Copy, CheckCircle, Clock, Trash2, X, ShoppingCart, ExternalLink } from 'lucide-react'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Order, CardKey } from '@/types'
 import { orderApi, getErrorMessage, paymentApi } from '@/lib/api'
 import { validateContact, getContactValidationError } from '@/lib/validation'
@@ -39,7 +40,7 @@ const paymentStatusMap = {
   refunded: { label: '已退款', color: 'text-purple-600 bg-purple-100 dark:text-purple-400 dark:bg-purple-900' }
 }
 
-export default function OrdersPage() {
+function OrdersPageContent() {
   const searchParams = useSearchParams()
   const urlOrderId = searchParams.get('orderId')
   
@@ -945,5 +946,19 @@ function PaymentButton({ order }: { order: Order }) {
         🔒 安全支付
       </p>
     </div>
+  )
+}
+
+export default function OrdersPage() {
+  return (
+    <Suspense fallback={
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-center justify-center py-12">
+          <LoadingSpinner />
+        </div>
+      </div>
+    }>
+      <OrdersPageContent />
+    </Suspense>
   )
 }
