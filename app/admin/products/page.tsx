@@ -340,7 +340,7 @@ export default function AdminProductsPage() {
       setProducts(updatedProducts)
       setFilteredProducts(updatedProducts.filter(product => 
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchTerm.toLowerCase())
+        (product.category?.name || '').toLowerCase().includes(searchTerm.toLowerCase())
       ))
     } else {
       // 添加新商品
@@ -348,7 +348,7 @@ export default function AdminProductsPage() {
       setProducts(newProducts)
       setFilteredProducts(newProducts.filter(product => 
         product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchTerm.toLowerCase())
+        (product.category?.name || '').toLowerCase().includes(searchTerm.toLowerCase())
       ))
     }
     setEditingProduct(null)
