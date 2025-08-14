@@ -69,7 +69,7 @@ export function Footer() {
               </div>
               <div className="flex items-center space-x-3 text-gray-600 dark:text-gray-400">
                 <MapPin className="h-4 w-4" />
-                <span className="text-sm">Worldwide.</span>
+                <span className="text-sm">售后群：702031935</span>
               </div>
             </div>
           </div>
