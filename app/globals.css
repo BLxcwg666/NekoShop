@@ -1,0 +1,254 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+[data-theme="dark"] {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* 背景图片样式 */
+.bg-neko-pattern {
+  background-image: url('https://cdn.xcnya.cn/Basic/part/nachoneko.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  position: relative;
+}
+
+/* 深色模式背景压暗层 */
+.bg-neko-pattern::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0);
+  transition: background-color 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dark .bg-neko-pattern::before {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* 毛玻璃效果基础样式 */
+.glass-effect {
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.125);
+}
+
+.glass-effect-dark {
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  background: rgba(17, 24, 39, 0.8);
+  border: 1px solid rgba(75, 85, 99, 0.3);
+}
+
+/* 针对Header的毛玻璃效果 */
+.header-glass {
+  backdrop-filter: blur(16px) saturate(200%);
+  -webkit-backdrop-filter: blur(16px) saturate(200%);
+  background: rgba(255, 255, 255, 0.85);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.dark .header-glass {
+  backdrop-filter: blur(20px) saturate(150%) brightness(1.1);
+  -webkit-backdrop-filter: blur(20px) saturate(150%) brightness(1.1);
+  background: rgba(15, 23, 42, 0.8);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+/* 针对Footer的毛玻璃效果 */
+.footer-glass {
+  backdrop-filter: blur(16px) saturate(200%);
+  -webkit-backdrop-filter: blur(16px) saturate(200%);
+  background: rgba(249, 250, 251, 0.9);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.dark .footer-glass {
+  backdrop-filter: blur(20px) saturate(150%) brightness(1.1);
+  -webkit-backdrop-filter: blur(20px) saturate(150%) brightness(1.1);
+  background: rgba(15, 23, 42, 0.85);
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.6);
+}
+
+/* 针对产品卡片的毛玻璃效果 */
+.product-card-glass {
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.product-card-glass:hover {
+  backdrop-filter: blur(16px) saturate(200%);
+  -webkit-backdrop-filter: blur(16px) saturate(200%);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.dark .product-card-glass {
+  backdrop-filter: blur(12px) saturate(150%) brightness(1.2);
+  -webkit-backdrop-filter: blur(12px) saturate(150%) brightness(1.2);
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.dark .product-card-glass:hover {
+  backdrop-filter: blur(16px) saturate(180%) brightness(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(180%) brightness(1.3);
+  background: rgba(30, 41, 59, 0.9);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* 自定义动画 */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* 毛玻璃效果增强 */
+.glass-effect {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-effect.dark {
+  background: rgba(31, 41, 55, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 分类卡片动画 */
+.category-card {
+  animation: fadeInScale 0.6s ease-out forwards;
+}
+
+.category-card:nth-child(1) { animation-delay: 0.1s; }
+.category-card:nth-child(2) { animation-delay: 0.2s; }
+.category-card:nth-child(3) { animation-delay: 0.3s; }
+.category-card:nth-child(4) { animation-delay: 0.4s; }
+.category-card:nth-child(5) { animation-delay: 0.5s; }
+.category-card:nth-child(6) { animation-delay: 0.6s; }
+
+/* 商品卡片动画 */
+.product-enter {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+/* 加载shimmer效果 */
+.shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* react-beautiful-dnd 样式修复 */
+/* 确保拖拽元素的层级和指针事件正常 */
+[data-rbd-draggable-context-id] {
+  user-select: none;
+}
+
+[data-rbd-draggable-id] {
+  transition: none !important;
+}
+
+[data-rbd-drag-handle-draggable-id] {
+  cursor: grab !important;
+}
+
+[data-rbd-drag-handle-draggable-id]:hover {
+  cursor: grab !important;
+}
+
+[data-rbd-drag-handle-draggable-id]:active {
+  cursor: grabbing !important;
+}
+
+/* 拖拽时的样式 */
+[data-rbd-draggable-id][style*="transform"] {
+  z-index: 999 !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* 确保 placeholder 可见 */
+[data-rbd-placeholder-context-id] {
+  display: block !important;
+}
+
+/* 防止拖拽时文本选择 */
+.dragging-container * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
